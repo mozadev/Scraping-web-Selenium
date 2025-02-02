@@ -14,33 +14,27 @@ def fill_word_template(excel_path, word_template_path, word_output_path):
     word_outh_path (str) : Ruta donde se guardara el documento word final.
 
     """
-    df_hoja4 = pd.read_excel(excel_path, sheet_name="Hoja4", dtype=str, engine="openpyxl")
-    df_hoja4.columns = df_hoja4.columns.str.strip()
-    # print(df_hoja4.columns.tolist())
+    df = pd.read_excel(excel_path, sheet_name="Hoja4", dtype=str, engine="openpyxl")
+    df.columns = df.columns.str.strip()
+    print(df.columns.tolist())
     # env = Environment(loader=FileSystemLoader(os.path.dirname(word_template_path)))
     # template = env.get_template(os.path.basename(word_template_path))
 
-    reportes = []
-    for _, row in df_hoja4.iterrows():
-    
-        reporte = {
+    for index, row in df.iterrows():
+        doc = DocxTemplate(word_template_path)
+
+        context = {
             'determinacion_causa': row.get('it_determinacion_de_la_causa', 'no data'),
             'medidas_tomadas': row.get('it_medidas_tomadas'),
             # 'fecha_inicio': row['fecha_inicio'].strftime('%d/%m%Y'),
             # 'fecha_fin': row['fecha_fin'].strftime('%d/%m%Y')
         }
-        reportes.append(reporte)
-
-    doc = DocxTemplate(word_template_path)
-    context  = {
-            'reportes': reportes
-
-        }
-
-    doc.render(context)
-    output_file = os.path.join(word_output_path, f"reporte_mensual_completo.docx")
-    doc.save(output_file)
-    print(f"Reporte mensual generado exitosamente: {output_file}")
+        # document = Document(word_template_path)
+        # document.add_paragraph(template.render(data))
+        doc.render(context)
+        output_file = os.path.join(word_output_path, f"reporte_Ticket_{index+1}.docx")
+        doc.save(output_file)
+        print(f"Ticket {index+1} generado exitosamente: {output_file}")
 
 if __name__ == "__main__":
 
