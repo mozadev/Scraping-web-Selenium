@@ -1,5 +1,6 @@
 import os
-from docx import Document
+# from docx import Document
+from docx.api import Document
 from jinja2 import Environment, FileSystemLoader
 import pandas as pd
 
@@ -21,10 +22,10 @@ def fill_word_template(excel_path, word_template_path, word_output_path):
 
     for index, row in df.iterrows():
         data = {
-            'determinacion_causa': row['determinacion_causa'],
-            'medidas_tomadas': row['medidas_tomadas'],
-            'fecha_inicio': row['fecha_inicio'].strftime('%d/%m%Y'),
-            'fecha_fin': row['fecha_fin'].strftime('%d/%m%Y')
+            'determinacion_causa': row['it_determinacion_de_la_causa'],
+            'medidas_tomadas': row['it_medidas_tomadas'],
+            # 'fecha_inicio': row['fecha_inicio'].strftime('%d/%m%Y'),
+            # 'fecha_fin': row['fecha_fin'].strftime('%d/%m%Y')
         }
         document = Document(word_template_path)
         document.add_paragraph(template.render(data))
@@ -32,9 +33,12 @@ def fill_word_template(excel_path, word_template_path, word_output_path):
         print(f"Ticket {index+1} generado exitosamente.")
 
 if __name__ == "__main__":
-    excel_path = os.path.abspath("media/pronatel/data/DataTicketsPronatel.xlsx")
-    word_template_path = os.path.abspath("media/pronatel/plantilla/plantilla_word.docx")
-    word_output_path = os.path.abspath("media/pronatel/reportes/")
+
+    base_path = "C:/Users/katana/Desktop/proyectos/bots_rpa"
+
+    excel_path = os.path.join(base_path, "media", "pronatel", "data", "DataTicketsPronatel.xlsx")
+    word_template_path = os.path.join(base_path, "media", "pronatel", "plantillas", "plantilla_word.docx")
+    word_output_path = os.path.join(base_path, "media", "pronatel", "reportes/")
 
     fill_word_template(excel_path, word_template_path, word_output_path)
 
