@@ -76,11 +76,11 @@ def fill_word_template(excel_path, word_template_path, word_output_path):
 
 if __name__ == "__main__":
 
-    #base_path = "C:/Users/katana/Desktop/proyectos/bots_rpa"
-    base_path = "C:/Users/mozac/Documents/pruebas/Fast-API-Bots-RPA-python-"
+    base_path = "C:/Users/katana/Desktop/proyectos/bots_rpa"
+    #base_path = "C:/Users/mozac/Documents/pruebas/Fast-API-Bots-RPA-python-"
 
     excel_path = os.path.join(base_path, "media", "pronatel", "data", "DataTicketsPronatel.xlsx")
-    word_template_path = os.path.join(base_path, "media", "pronatel", "plantillas", "plantilla_word.docx")
+    word_template_path = os.path.join(base_path, "media", "pronatel", "plantillas", "plantilla_word2.docx")
     word_output_path = os.path.join(base_path, "media", "pronatel", "reportes/")
 
     fill_word_template(excel_path, word_template_path, word_output_path)
