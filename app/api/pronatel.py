@@ -1,4 +1,4 @@
-from http.client import HTTPException
+from fastapi import HTTPException
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import FileResponse
 from typing import Optional
@@ -31,22 +31,12 @@ class Config:
     }
 
 
-# UPLOAD_DIR ="media/pronatel/data"
-# WORD_OUTPUT_DIR="media/prontel/reportes"
-# WORD_PLANTILLA_PATH="media/pronatel/plantilla"
-
-# os.makedirs(UPLOAD_DIR, exist_ok=True)
-# os.makedirs(WORD_OUTPUT_DIR, exist_ok=True)
-
-
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Obtiene el directorio del script actual
 
 UPLOAD_DIR = os.path.join(BASE_DIR, "..", "..", "media", "pronatel", "data")
 WORD_OUTPUT_DIR = os.path.join(BASE_DIR, "..", "..", "media", "pronatel", "reportes")
 WORD_PLANTILLA_PATH = os.path.join(BASE_DIR, "..", "..", "media", "pronatel", "plantillas")
 
-# Asegura que las carpetas existen
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(WORD_OUTPUT_DIR, exist_ok=True)
 os.makedirs(WORD_PLANTILLA_PATH, exist_ok=True)
@@ -87,7 +77,6 @@ async def upload_excel_file(file: UploadFile = File(...)):
         status_code=500,
         detail=f"Error al procesar el archivo: {str(e)}"
         )
-    
 
 @router.post("/generate-word")
 async def generate_word_report(request: GenerateWordRequest):
@@ -105,31 +94,41 @@ async def generate_word_report(request: GenerateWordRequest):
 
     try:
         excel_path = os.path.join(UPLOAD_DIR, f"{request.excel_id}.xlsx")
-        word_template_path = "C:/Users/katana/Desktop/proyectos/bots_rpa/media/pronatel/plantillas/plantilla_word.docx"
+        word_template_path = os.path.join(WORD_PLANTILLA_PATH, "plantilla_tabla.docx")
+        #word_template_path = "C:/Users/katana/Desktop/proyectos/bots_rpa/media/pronatel/plantillas/plantilla_word.docx"
+        #word_template_path = "C:/Users/mozac/Documents/pruebas/Fast-API-Bots-RPA-python-/media/pronatel/plantillas/plantilla_word4.docx"
 
         if not os.path.exists(excel_path):
            raise HTTPException(404, "Archivo Excel no encontrado")
         
-     
-        word_output_path  = fill_word_template(
-            excel_path=excel_path,
-            word_template_path=word_template_path,
-            word_output_path=WORD_OUTPUT_DIR,
-          
-        )
+        try:
+           word_output_path  = fill_word_template(
+               excel_path=excel_path,
+               word_template_path=word_template_path,
+               word_output_path=WORD_OUTPUT_DIR,
+
+           )
+
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error inesperado : {str(e)}")
 
         if not os.path.exists(word_output_path):
             raise HTTPException(status_code=500, detail="Error: No se guardo el archivo Word.")
 
         return FileResponse(
             word_output_path,
-            #filename=f"reporte_tickets.docx",
-            filename=os.path.basename(word_output_path),  # Nombre dinámico
+            filename=os.path.basename(word_output_path), 
             media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         )
     
+
+    except HTTPException:
+        raise
     except Exception as e:
-       raise HTTPException(500, "Error al procesar el archivo")
+       raise HTTPException( status_code=500, detail=str(e))
     
 
     
