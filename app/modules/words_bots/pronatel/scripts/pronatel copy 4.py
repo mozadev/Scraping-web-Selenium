@@ -24,6 +24,7 @@ def fill_word_template(excel_path, word_template_path, word_output_path):
     df_reporte_detalle = pd.read_excel(excel_path, sheet_name="reporte_detalle", dtype=str, engine="openpyxl")
 
     df_reporte_detalle.columns = df_reporte_detalle.columns.str.strip()
+
     df_reporte_detalle = df_reporte_detalle.map(limpiar_texto)
 
     reportes_detallados = []
@@ -50,22 +51,20 @@ def fill_word_template(excel_path, word_template_path, word_output_path):
         'reportes': reportes_detallados
         }
     
-    output_file = os.path.join(word_output_path, f"reporte_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.docx")
     doc.render(context)
+    output_file = os.path.join(word_output_path, f"reporte_mensual_completo.docx")
     doc.save(output_file)
-
     print(f"Reporte mensual generado exitosamente: {output_file}")
-    return output_file
+    
 
+if __name__ == "__main__":
 
-# if __name__ == "__main__":
+    base_path = "C:/Users/katana/Desktop/proyectos/bots_rpa"
+    #base_path = "C:/Users/mozac/Documents/pruebas/Fast-API-Bots-RPA-python-"
+    excel_path = os.path.join(base_path, "media", "pronatel", "data", "DataTicketsPronatel.xlsx")
+    word_template_path = os.path.join(base_path, "media", "pronatel", "plantillas", "plantilla_word5.docx")
+    word_output_path = os.path.join(base_path, "media", "pronatel", "reportes/")
 
-#     base_path = "C:/Users/katana/Desktop/proyectos/bots_rpa"
-#     #base_path = "C:/Users/mozac/Documents/pruebas/Fast-API-Bots-RPA-python-"
-#     excel_path = os.path.join(base_path, "media", "pronatel", "data", "DataTicketsPronatel.xlsx")
-#     word_template_path = os.path.join(base_path, "media", "pronatel", "plantillas", "plantilla_word5.docx")
-#     word_output_path = os.path.join(base_path, "media", "pronatel", "reportes/")
-
-#     fill_word_template(excel_path, word_template_path, word_output_path)
+    fill_word_template(excel_path, word_template_path, word_output_path)
 
 

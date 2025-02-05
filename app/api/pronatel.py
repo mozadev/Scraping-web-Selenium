@@ -1,13 +1,13 @@
 from http.client import HTTPException
 from fastapi import APIRouter, UploadFile, File
-from fastapi.response import FileResponse
+from fastapi.responses import FileResponse
 from typing import Optional
 from pydantic import BaseModel
 import os
 from datetime import datetime
 import shutil
 
-from app.modules.word_bots.pronatel.scripts.pronatel import fill_word_template
+from app.modules.words_bots.pronatel.scripts.pronatel import fill_word_template  
 
 router = APIRouter(prefix="/api/reportes", tags=["reportes_tickets"])
 
@@ -18,8 +18,8 @@ class ProcessExcelResponse(BaseModel):
 
 class GenerateWordRequest(BaseModel):
     excel_id: str
-    fecha_inicio: Optional[str] = None
-    fecha_fin: Optional[str] = None
+    # fecha_inicio: Optional[str] = None
+    # fecha_fin: Optional[str] = None
 
 class Config:
     json_schema_extra = {
@@ -31,11 +31,26 @@ class Config:
     }
 
 
-UPLOAD_DIR ="media/pronatel/data"
-WORD_OUTPUT_DIR="media/prontel/output"
+# UPLOAD_DIR ="media/pronatel/data"
+# WORD_OUTPUT_DIR="media/prontel/reportes"
+# WORD_PLANTILLA_PATH="media/pronatel/plantilla"
 
+# os.makedirs(UPLOAD_DIR, exist_ok=True)
+# os.makedirs(WORD_OUTPUT_DIR, exist_ok=True)
+
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Obtiene el directorio del script actual
+
+UPLOAD_DIR = os.path.join(BASE_DIR, "..", "..", "media", "pronatel", "data")
+WORD_OUTPUT_DIR = os.path.join(BASE_DIR, "..", "..", "media", "pronatel", "reportes")
+WORD_PLANTILLA_PATH = os.path.join(BASE_DIR, "..", "..", "media", "pronatel", "plantillas")
+
+# Asegura que las carpetas existen
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(WORD_OUTPUT_DIR, exist_ok=True)
+os.makedirs(WORD_PLANTILLA_PATH, exist_ok=True)
+
 
 @router.post("/upload-excel", response_model=ProcessExcelResponse)
 async def upload_excel_file(file: UploadFile = File(...)):
@@ -90,24 +105,17 @@ async def generate_word_report(request: GenerateWordRequest):
 
     try:
         excel_path = os.path.join(UPLOAD_DIR, f"{request.excel_id}.xlsx")
-        word_template_path = "templates/reporte_template.docx"
-        word_output_path = os.path.join(
-            WORD_OUTPUT_DIR,
-            f"reporte_{request.excel_id}.docx"
-        )
+        word_template_path = "C:/Users/katana/Desktop/proyectos/bots_rpa/media/pronatel/plantillas/plantilla_word.docx"
 
         if not os.path.exists(excel_path):
-            raise HTTPException(
-                status_code=404,
-                detail="Archivo excel no encontrado"
-            )
+           raise HTTPException(404, "Archivo Excel no encontrado")
         
-        fill_word_template(
+     
+        word_output_path  = fill_word_template(
             excel_path=excel_path,
             word_template_path=word_template_path,
-            word_output_path=word_output_path,
-            fecha_inicio=request.fecha_inicio,
-            fecha_fin=request.fecha_fin
+            word_output_path=WORD_OUTPUT_DIR,
+          
         )
 
         if not os.path.exists(word_output_path):
@@ -115,15 +123,13 @@ async def generate_word_report(request: GenerateWordRequest):
 
         return FileResponse(
             word_output_path,
-            filename=f"reporte_tickets.docx",
+            #filename=f"reporte_tickets.docx",
+            filename=os.path.basename(word_output_path),  # Nombre dinámico
             media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         )
     
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error al generar el reporte: {str(e)}"
-        )
+       raise HTTPException(500, "Error al procesar el archivo")
     
 
     
