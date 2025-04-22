@@ -104,12 +104,12 @@ def fill_word_template(excel_path, word_template_path, word_output_path):
         }
         reportes_detallados.append(reporte)
 
-    doc = DocxTemplate(word_template_path)
     context  = {
         'fecha_ini': "01/01/2025",
         'fecha_fin': "31/01/2025",
         'reportes': reportes_detallados
         }
+    doc = DocxTemplate(word_template_path)
     output_file = os.path.join(word_output_path, f"reporte_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx")
     doc.render(context)
     doc.save(output_file)

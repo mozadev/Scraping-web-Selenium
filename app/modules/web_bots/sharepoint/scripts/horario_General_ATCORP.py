@@ -72,7 +72,8 @@ def get_info_from_Exel_saved_to_dataframe():
     
     excel_data = pd.ExcelFile(sharepointHorarioGeneral_path)
     #hojas_seleccionadas = ['25-11 al 01-12', '02-12 al 08-12', '09-12 al 15-12', '16-12 al 22-12', '23-12 al 29-12', '30-12 al 05-01-25']
-    hojas_seleccionadas = ['06-01 al 12-01']
+    hojas_seleccionadas = ['24-02 al 02-03', '03-03 al 09-03', '10-03 al 16-03', '17-03 al 23-03', '24-03 al 30-03', '31-03 al 06-04']
+    #hojas_seleccionadas = ['06-01 al 12-01']
     datos_extraidos = []
 
     for hoja in hojas_seleccionadas:

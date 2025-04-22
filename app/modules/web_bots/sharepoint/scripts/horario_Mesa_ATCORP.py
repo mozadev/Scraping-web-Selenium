@@ -65,7 +65,8 @@ def get_info_from_Excel_Saved():
 
     excel_data = pd.ExcelFile(sharepointHorarioGeneral_path)
     #hojas_seleccionadas = ['25 nov - 01 dic', '02 dic - 08 dic ', '09 dic - 15 dic ', '16 dic - 22 dic  ', '23 dic - 29 dic  ','30 dic - 05  En'] 
-    hojas_seleccionadas = ['06 Ene - 12 Ene'] 
+    hojas_seleccionadas = ['24 Feb - 02 Mar', '03 Mar - 09 Mar', '10 Mar - 16 Mar', '17 Mar - 23 Mar', '24 Mar - 30 Mar ','31 Mar -  6 Abril '] 
+    #hojas_seleccionadas = ['06 Ene - 12 Ene'] 
     datos_extraidos = []
 
     for hoja in hojas_seleccionadas:
